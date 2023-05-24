@@ -1,0 +1,21 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+requests = "*"
+pydantic = "*"
+pandas = "*"
+
+[dev-packages]
+pytest = "*"
+jupyter = "*"
+eia-client = {editable = true, path = "."}
+ruff = "*"
+
+[requires]
+python_version = "3.11"
+
+[scripts]
+lint = "ruff check ."

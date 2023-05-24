@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "eia_client"
+version = "0.1.0"
+description = "Client for interacting with the EIA API"
+authors = [
+  { name = "James Campbell" },
+]
+license = { file = "LICENSE" }
+readme = "README.md"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+requires-python = ">=3.10"
+dependencies = [
+    "requests >= 2.26.0",
+    "pandas >= 1.0"
+]
+
+[project.urls]
+"Homepage" = "https://github.com/jcampbell/eia_client"
+"Bug Tracker" = "https://github.com/jcampbell/eia_client/issues"
+
+[options]
+packages = ["eia_client"]
