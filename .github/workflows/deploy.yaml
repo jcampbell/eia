@@ -11,6 +11,9 @@ jobs:
 
   deploy:
     runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/p/eia
     permissions:
       id-token: write
     steps:
