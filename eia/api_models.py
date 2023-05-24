@@ -1,4 +1,4 @@
-from typing import Dict, Literal
+from typing import Dict, Literal, Union
 
 from pydantic import BaseModel
 
@@ -18,7 +18,7 @@ class FrequencyInfo(BaseModel):
 class FacetOption(BaseModel):
     id: str
     name: str
-    alias: str | None
+    alias: Union[str, None]
 
 
 class FacetInfo(BaseModel):
@@ -27,8 +27,8 @@ class FacetInfo(BaseModel):
 
 
 class DataInfo(BaseModel):
-    alias: str | None
-    units: str | None
+    alias: Union[str, None]
+    units: Union[str, None]
 
 
 class SeriesInfo(BaseModel):
@@ -36,7 +36,7 @@ class SeriesInfo(BaseModel):
     description: str
     frequency: list[FrequencyInfo]
     facets: list[FacetInfo]
-    facet_options: Dict[str, list[FacetOption]] | None
+    facet_options: Union[Dict[str, list[FacetOption]], None]
     data: Dict[str, DataInfo]
     startPeriod: str
     endPeriod: str
@@ -47,7 +47,7 @@ class SeriesInfo(BaseModel):
 class RouteInfo(BaseModel):
     id: str
     name: str
-    description: str | None
+    description: Union[str, None]
 
 
 class DatasetInfo(BaseModel):

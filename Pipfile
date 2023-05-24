@@ -11,13 +11,11 @@ pandas = "*"
 [dev-packages]
 pytest = "*"
 jupyter = "*"
-eia = {editable = true, path = "."}
 ruff = "*"
-build = "*"
-twine = "*"
+eia = {editable = true, path = "."}
 
 [requires]
-python_version = "3.11"
+python_version = "3.9"
 
 [scripts]
 lint = "ruff check ."

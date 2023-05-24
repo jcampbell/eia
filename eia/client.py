@@ -1,4 +1,4 @@
-from typing import Dict, Literal
+from typing import Dict, Literal, Union
 import logging
 from pydantic import BaseModel, ValidationError
 import os
@@ -28,8 +28,8 @@ class APIParams(BaseModel):
     sort: list[SortDirective] = []
     offset: int = 0
     length: int = 5000
-    start: str | None = None
-    end: str | None = None
+    start: Union[str, None] = None
+    end: Union[str, None] = None
 
     @property
     def query_str(self) -> str:
@@ -73,6 +73,24 @@ class APIParams(BaseModel):
 
         return params_str
 
+class SessionManager:
+    def __init__(self):
+        self._init_session()
+    
+    def _init_session(self):
+        self._session = requests.Session()
+        self._session.headers.update({"Content-Type": "application/json"})
+
+    def get(self, *args, **kwargs):
+        # TODO: add rate limiting
+        retries = 0
+        while retries < 3:
+            try:
+                return self._session.get(*args, **kwargs)
+            except ConnectionError:
+                self._init_session()
+                retries += 1
+        raise ConnectionError("Could not connect to EIA API after 3 retries")        
 
 class Client:
     """Client for the EIA API.
@@ -81,7 +99,7 @@ class Client:
     parameters and returning a pandas DataFrame.
     """
 
-    def __init__(self, api_key: str | None = None):
+    def __init__(self, api_key: Union[str, None] = None):
         """Initialize the client with an API key.
 
         Args:
@@ -99,8 +117,8 @@ class Client:
         if not api_key:
             raise ValueError("api_key is required to use the EIA API")
         self._api_key = api_key
-        self._session = requests.Session()
-        self._info: Dict[str, DatasetInfo | SeriesInfo] = dict()
+        self._session = SessionManager()
+        self._info: Dict[str, Union[DatasetInfo, SeriesInfo]] = dict()
 
     def _get_data(
         self, series: str, params: APIParams, show_warnings: bool = True
@@ -123,7 +141,7 @@ class Client:
                 f"Error fetching data from EIA API: {res.json()['error']}"
             )
 
-    def _make_info_request(self, dataset: str | None = None) -> Dict:
+    def _make_info_request(self, dataset: Union[str, None] = None) -> Dict:
         if dataset and dataset.endswith("/data"):
             raise ValueError(
                 "Series must not end with '/data' to fetch route info; consider using"
@@ -143,7 +161,7 @@ class Client:
             )
         return data
 
-    def dataset_info(self, dataset: str | None = None) -> DatasetInfo:
+    def dataset_info(self, dataset: Union[str, None] = None) -> DatasetInfo:
         """Get information about a dataset, including available series 
         or child datasets.
 
@@ -235,8 +253,8 @@ class Client:
         sort: list[SortDirective],
         offset: int,
         length: int,
-        start: str | None,
-        end: str | None,
+        start: Union[str, None],
+        end: Union[str, None],
     ) -> APIParams:
         errors = []
         if frequency not in [frequency.id for frequency in info.frequency]:
@@ -298,13 +316,13 @@ class Client:
         self,
         series: str,
         data: list[str],
-        frequency: FrequencyType | None = None,
-        facets: list[FacetDefinition] | Dict[str, list[str]] | None = None,
-        sort: list[SortDirective | Dict[str, str]] | None = None,
+        frequency: Union[FrequencyType, None] = None,
+        facets: Union[list[FacetDefinition], Dict[str, list[str]], None] = None,
+        sort: Union[list[SortDirective], Dict[str, str], None] = None,
         offset: int = 0,
-        length: int | None = None,
-        start: str | None = None,
-        end: str | None = None,
+        length: Union[int, None] = None,
+        start: Union[str, None] = None,
+        end: Union[str, None] = None,
     ) -> pandas.DataFrame:
         """Get data from the EIA API for a named data series.
 
