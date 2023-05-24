@@ -3,7 +3,7 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "eia_client"
+name = "eia"
 version = "0.1.0"
 description = "Client for interacting with the EIA API"
 authors = [
@@ -24,8 +24,8 @@ dependencies = [
 ]
 
 [project.urls]
-"Homepage" = "https://github.com/jcampbell/eia_client"
-"Bug Tracker" = "https://github.com/jcampbell/eia_client/issues"
+"Homepage" = "https://github.com/jcampbell/eia"
+"Bug Tracker" = "https://github.com/jcampbell/eia/issues"
 
 [options]
-packages = ["eia_client"]
+packages = ["eia"]

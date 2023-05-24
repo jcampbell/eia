@@ -11,7 +11,7 @@ pandas = "*"
 [dev-packages]
 pytest = "*"
 jupyter = "*"
-eia-client = {editable = true, path = "."}
+eia = {editable = true, path = "."}
 ruff = "*"
 build = "*"
 twine = "*"

@@ -1,4 +1,4 @@
-# eia-client
+# EIA
 
 The client exposes a simple interface to the EIA API.
 
@@ -8,7 +8,7 @@ See https://www.eia.gov/opendata/documentation.php for detailed API documentatio
 ## Installation
 
 ```bash
-pip install eia-client
+pip install eia
 ```
 
 ## Examples

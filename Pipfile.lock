@@ -596,7 +596,7 @@
             "markers": "python_version >= '3.7'",
             "version": "==0.20.1"
         },
-        "eia-client": {
+        "eia": {
             "editable": true,
             "path": "."
         },
