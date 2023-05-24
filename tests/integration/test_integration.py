@@ -2,7 +2,7 @@ import pytest
 
 import os
 
-from eia_client import Client, SortDirective, FacetDefinition
+from eia import Client, SortDirective, FacetDefinition
 
 @pytest.fixture(scope="session")
 def client() -> Client:

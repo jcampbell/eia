@@ -1,4 +1,4 @@
-from eia_client.client import APIParams, FacetDefinition, SortDirective
+from eia.client import APIParams, FacetDefinition, SortDirective
 
 
 def test_api_params():
