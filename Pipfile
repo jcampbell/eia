@@ -13,6 +13,8 @@ pytest = "*"
 jupyter = "*"
 eia-client = {editable = true, path = "."}
 ruff = "*"
+build = "*"
+twine = "*"
 
 [requires]
 python_version = "3.11"
