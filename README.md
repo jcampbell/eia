@@ -23,6 +23,6 @@ operational = client.series_info("electricity/electric-power-operational-data")
 operational.data
 ```
 
-See examples in the [examples](examples) directory.
+See examples in the [example](example/example.ipynb) directory.
 
 Note: the client does not manage rate limits. See the [EIA API documentation](https://www.eia.gov/opendata/qb.php?category=371) for more information.
