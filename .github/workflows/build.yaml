@@ -28,5 +28,7 @@ jobs:
           # default set of ruff rules with GitHub Annotations
           ruff --format=github --target-version=py310 .
       - name: Test with pytest
+        env:
+          EIA_API_KEY: ${{ secrets.EIA_API_KEY }}
         run: |
           pytest
