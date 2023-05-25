@@ -22,10 +22,8 @@ def test_api_params():
     )
     assert (
         params.query_str
-        == (
-            "frequency=weekly&offset=10&length=100&start=2020-01-01&end=2020-01-31"
-            "&facets[stateid][0]=AK&facets[stateid][1]=AL&data[0]=price&data[1]=volume"
-            "&sort[0][column]=date&sort[0][direction]=desc&sort[1][column]=stateid&"
-            "sort[1][direction]=asc"
-        )
+        == "frequency=weekly&offset=10&length=100&start=2020-01-01&end=2020-01-31"
+        "&facets[stateid][0]=AK&facets[stateid][1]=AL&data[0]=price&data[1]=volume"
+        "&sort[0][column]=date&sort[0][direction]=desc&sort[1][column]=stateid&"
+        "sort[1][direction]=asc"
     )

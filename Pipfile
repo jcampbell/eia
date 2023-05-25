@@ -7,15 +7,14 @@ name = "pypi"
 requests = "*"
 pydantic = "*"
 pandas = "*"
+ratelimit = "*"
 
 [dev-packages]
 pytest = "*"
 jupyter = "*"
 ruff = "*"
 eia = {editable = true, path = "."}
+black = {extras = ["jupyter"], version = "*"}
 
 [requires]
 python_version = "3.9"
-
-[scripts]
-lint = "ruff check ."

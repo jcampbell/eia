@@ -4,6 +4,7 @@ from pydantic import BaseModel, ValidationError
 import os
 
 import pandas
+from ratelimit import sleep_and_retry, limits
 import requests
 
 from eia.api_models import DatasetInfo, FacetOption, FrequencyType, SeriesInfo
@@ -73,29 +74,33 @@ class APIParams(BaseModel):
 
         return params_str
 
+
 class SessionManager:
     def __init__(self):
         self._init_session()
-    
+
     def _init_session(self):
         self._session = requests.Session()
         self._session.headers.update({"Content-Type": "application/json"})
-
-    def get(self, *args, **kwargs):
-        # TODO: add rate limiting
+    
+    @sleep_and_retry
+    @limits(calls=20, period=60)
+    @limits(calls=900, period=900)
+    def get(self, *args, **kwargs) -> requests.Response:
         retries = 0
         while retries < 3:
             try:
                 return self._session.get(*args, **kwargs)
-            except ConnectionError:
+            except requests.exceptions.ConnectionError:
                 self._init_session()
                 retries += 1
-        raise ConnectionError("Could not connect to EIA API after 3 retries")        
+        raise requests.exceptions.ConnectionError("Could not connect to EIA API after 3 retries")
+
 
 class Client:
     """Client for the EIA API.
 
-    Simplifies the process of fetching data from the EIA API by adding typed 
+    Simplifies the process of fetching data from the EIA API by adding typed
     parameters and returning a pandas DataFrame.
     """
 
@@ -103,13 +108,13 @@ class Client:
         """Initialize the client with an API key.
 
         Args:
-            api_key (str, optional): API key to use for requests. If no API key is 
-                provided, the client will attempt to use the EIA_API_KEY 
+            api_key (str, optional): API key to use for requests. If no API key is
+                provided, the client will attempt to use the EIA_API_KEY
                 environment variable.
 
 
         Raises:
-            ValueError: If no API key is provided and the EIA_API_KEY environment 
+            ValueError: If no API key is provided and the EIA_API_KEY environment
                 variable is not set.
         """
         if api_key is None:
@@ -162,11 +167,11 @@ class Client:
         return data
 
     def dataset_info(self, dataset: Union[str, None] = None) -> DatasetInfo:
-        """Get information about a dataset, including available series 
+        """Get information about a dataset, including available series
         or child datasets.
 
         Args:
-            dataset (str, optional): The dataset to get information about. If 
+            dataset (str, optional): The dataset to get information about. If
                 no dataset is provided, the root dataset will be returned.
 
         Returns:
@@ -205,7 +210,7 @@ class Client:
 
         Args:
             series (str): The series to get information about.
-            get_facet_info (bool, optional): Whether to fetch facet 
+            get_facet_info (bool, optional): Whether to fetch facet
                 information. Defaults to True.
 
         Returns:
@@ -296,7 +301,7 @@ class Client:
         if length < 0 or length > 5000:
             errors.append(ValueError("Length must be between 0 and 5000"))
 
-        # Note: we cannot validate sort using the info object, because the 
+        # Note: we cannot validate sort using the info object, because the
         # API does not return sort information
         # TODO: Validate start and end dates
         if len(errors) > 0:
@@ -329,15 +334,15 @@ class Client:
         Args:
             series (str): The name of the series to fetch data for.
             data (list[str]): The data elements to fetch.
-            frequency (FrequencyType, optional): The frequency of the data to fetch. 
+            frequency (FrequencyType, optional): The frequency of the data to fetch.
                 If not specified, uses the default frequency.
-            facets (list[FacetDefinition], optional): The facets to fetch. If not 
+            facets (list[FacetDefinition], optional): The facets to fetch. If not
                 specified, fetches all facets.
-            sort (list[SortDirective], optional): The sort directives to use. If not 
+            sort (list[SortDirective], optional): The sort directives to use. If not
                 specified, uses the default sort order.
-            offset (int, optional): The offset to use when fetching data. 
+            offset (int, optional): The offset to use when fetching data.
                 Defaults to 0.
-            length (int, optional): The number of data points to fetch. 
+            length (int, optional): The number of data points to fetch.
                 Defaults to None, which will fetch all available data.
             start (str, optional): The start date to fetch data for. Defaults to None.
             end (str, optional): The end date to fetch data for. Defaults to None.
@@ -380,15 +385,15 @@ class Client:
         while check_for_more_results:
             logger.info(f"Fetching data for {series} with offset {offset}")
             params = self._build_api_params(
-                info, 
-                frequency, 
-                data, 
-                facets, 
-                sort, # type: ignore
-                offset, 
-                length, 
-                start, 
-                end
+                info,
+                frequency,
+                data,
+                facets,
+                sort,  # type: ignore
+                offset,
+                length,
+                start,
+                end,
             )
             df = self._get_data(series, params=params, show_warnings=False)
             if len(df) < length:

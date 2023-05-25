@@ -4,6 +4,7 @@ import os
 
 from eia import Client, SortDirective, FacetDefinition
 
+
 @pytest.fixture(scope="session")
 def client() -> Client:
     return Client(api_key=os.environ["EIA_API_KEY"])
@@ -59,18 +60,13 @@ def test_get_facet_info(client):
 def test_error_info(client):
     series = "petroleum/pri/spt/data"
     # Quarterly is not a valid frequency for this series
-    frequency="quarterly"
-    data=["value"]
-    facets=[FacetDefinition(id="duoarea", values=["Y35NY", "RGC"])]
-    start="2020-01-01"
-    end="2020-01-31"
+    frequency = "quarterly"
+    data = ["value"]
+    facets = [FacetDefinition(id="duoarea", values=["Y35NY", "RGC"])]
+    start = "2020-01-01"
+    end = "2020-01-31"
     with pytest.raises(ValueError) as e:
         _ = client.get(
-            series, 
-            frequency=frequency, 
-            data=data, 
-            facets=facets, 
-            start=start, 
-            end=end
+            series, frequency=frequency, data=data, facets=facets, start=start, end=end
         )
     assert "Frequency quarterly not available for this dataset" in str(e.value)
