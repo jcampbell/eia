@@ -355,7 +355,7 @@ class Client:
                 " /data suffix for getting data using this client."
             )
             series = series[:-5]
-        info = self.series_info(series)
+        info = self.series_info(series, get_facet_info=False)
         if frequency is None:
             frequency = info.defaultFrequency
         if facets is None:
