@@ -82,7 +82,7 @@ class SessionManager:
     def _init_session(self):
         self._session = requests.Session()
         self._session.headers.update({"Content-Type": "application/json"})
-    
+
     @sleep_and_retry
     @limits(calls=20, period=60)
     @limits(calls=900, period=900)
@@ -94,7 +94,9 @@ class SessionManager:
             except requests.exceptions.ConnectionError:
                 self._init_session()
                 retries += 1
-        raise requests.exceptions.ConnectionError("Could not connect to EIA API after 3 retries")
+        raise requests.exceptions.ConnectionError(
+            "Could not connect to EIA API after 3 retries"
+        )
 
 
 class Client:
